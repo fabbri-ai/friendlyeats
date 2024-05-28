@@ -41,12 +41,34 @@ export async function addReviewToRestaurant(db, restaurantId, review) {
 	return;
 }
 
-function applyQueryFilters(q, { category, city, price, sort }) {
-	return;
+export async function getRestaurants(db = db, filters = {}) {
+	let q = query(collection(db, "restaurants"));
+
+	q = applyQueryFilters(q, filters);
+	const results = await getDocs(q);
+	return results.docs.map(doc => {
+			return {
+					id: doc.id,
+					...doc.data(),
+					// Only plain objects can be passed to Client Components from Server Components
+					timestamp: doc.data().timestamp.toDate(),
+			};
+	});
 }
 
 export async function getRestaurants(db = db, filters = {}) {
-	return [];
+	let q = query(collection(db, "restaurants"));
+
+	q = applyQueryFilters(q, filters);
+	const results = await getDocs(q);
+	return results.docs.map(doc => {
+			return {
+					id: doc.id,
+					...doc.data(),
+					// Only plain objects can be passed to Client Components from Server Components
+					timestamp: doc.data().timestamp.toDate(),
+			};
+	});
 }
 
 export function getRestaurantsSnapshot(cb, filters = {}) {
